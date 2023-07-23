@@ -5,6 +5,7 @@ import Menuitem from './components/MenuItem';
 
 function App() {
   const [gameList, setGameList] = useState([]);
+  const [selectedGame, setSelectedGame] = useState(null);
 
   useEffect(() => {
     fetch('./formattedCSV.csv')
@@ -13,7 +14,7 @@ function App() {
         const csvRows = responseText.split('\n'); // Split by new line to get rows
         const parsedGameList = csvRows.map(csvRow => {
           const [name, collected] = csvRow.split(','); // Split by comma to get name and collected status
-          return { name, collected: collected === 'true' }; // Convert collected to a boolean
+          return { name, collected: collected && collected.toLowerCase() === 'true' }; // Convert collected to a boolean
         });
         setGameList(parsedGameList);
       })
@@ -24,11 +25,14 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        {gameList.map((game, index) => (
-          <Menuitem key={index} name={game.name} collected={game.collected} />
-        ))}
-      </header>
+        <div style={{ display:'flex', flexDirection: 'column', scrollX: 'hidden', overflowX: 'wrap', overflowY:'scroll', height: '80vh'}}>
+          {gameList.map((game, index) => (
+            <Menuitem selectItemFunction={setSelectedGame} key={index} game={game} />
+          ))}
+        </div>
+      <div>
+        { selectedGame ? ( <h1>{selectedGame.name}</h1> ) : '' }
+      </div>
     </div>
   );
 }
