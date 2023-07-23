@@ -1,4 +1,4 @@
-const { button, Component } = require("react");
+const { Component } = require("react");
 
 
 
@@ -14,7 +14,7 @@ export default class MenuItem extends Component {
                 <div style={{backgroundColor: this.props.game.collected ? '#00ff00' : '#ff0000', display:'flex', flexBasis: 1, minWidth:'10vw' }}>
                 </div>
             <div style={{display:'flex', width:'100%', backgroundColor: 'grey' }}>
-            {`Name:${this.props.game.name || ''}`}
+            {`${this.props.game.name || ''}`}
             </div>
             </div>
         )

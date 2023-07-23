@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { useState, useEffect } from 'react';
 import Menuitem from './components/MenuItem';
@@ -11,9 +10,6 @@ function App() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [textFilter, setTextFilter] = useState('')
 
-  const saveChanges = function() {
-
-  }
   const handleToggleChange = () => {
     if (selectedGame) {
       const updatedGameList = gameList.map(game => {
