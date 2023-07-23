@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import magIcon from '../../mg icon.png'
 
 export default class SearchTool extends Component {
   constructor(props) {
@@ -12,7 +13,7 @@ export default class SearchTool extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{display:'flex',flexDirection: 'row', justifyContent: 'flex-end'}}>
         <div>
             {
                 this.state.searchBarExpanded ? 
@@ -33,7 +34,9 @@ export default class SearchTool extends Component {
           this.setState({ searchBarExpanded: !this.state.searchBarExpanded, searchText: '' });
           this.props.textChangedSetter('');
 
-        } }>???</div>
+        } }>
+            <img src={magIcon} width='20vw' height='20vh' alt='Search' />
+        </div>
       </div>
     );
   }
