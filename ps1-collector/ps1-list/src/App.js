@@ -30,11 +30,12 @@ function App() {
     fetch('./formattedCSV.csv')
       .then(response => response.text())
       .then(responseText => {
-        const csvRows = responseText.split('\n'); // Split by new line to get rows
+        // the slice is to skip the header
+        const csvRows = responseText.split('\n').slice(1); // Split by new line to get rows
         const parsedGameList = csvRows.map(csvRow => {
           const [name, collected] = csvRow.split(','); // Split by comma to get name and collected status
           return { name, collected: collected && collected.toLowerCase() === 'true' }; // Convert collected to a boolean
-        });
+        }).filter(gg => gg.name);
         setGameList(parsedGameList);
       })
       .catch(error => {
