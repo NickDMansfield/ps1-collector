@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, StyleSheet, ScrollView, Switch} from 'react-native';
 import MenuItem from './components/MenuItem';
-import SearchTool from './components/SearchTool/SearchTool';
-import Toggle from 'react-native-toggle'; // Install this library separately using 'npm install react-native-toggle'
-import formattedCSV from './formattedCSV'; // Import your formattedCSV data as a local file
+import SearchTool from './components/SearchTool';
 
 export default function App() {
   const [gameList, setGameList] = useState([]);
@@ -14,7 +12,7 @@ export default function App() {
     if (selectedGame) {
       const updatedGameList = gameList.map(game => {
         if (game.name === selectedGame.name) {
-          return { ...game, collected: !game.collected };
+          return {...game, collected: !game.collected};
         }
         return game;
       });
@@ -27,17 +25,37 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Assuming 'formattedCSV' is an array of objects containing name and collected properties
-    setGameList(formattedCSV.filter(gg => gg.name));
+    // Fetch the CSV data from the local file
+    fetch(
+      'https://raw.githubusercontent.com/NickDMansfield/ps1-collector/master/formattedCSV.csv',
+    )
+      .then(response => response.text())
+      .then(csvData => {
+        // Split the CSV data into rows
+        const csvRows = csvData.split('\n').slice(1); // Split by new line to get rows
+        const parsedGameList = csvRows
+          .map(csvRow => {
+            const [name, collected] = csvRow.split(','); // Split by comma to get name and collected status
+            return {
+              name,
+              collected: collected && collected.toLowerCase() === 'true',
+            }; // Convert collected to a boolean
+          })
+          .filter(gg => gg.name);
+        setGameList(parsedGameList);
+      })
+      .catch(error => {
+        console.error('Error fetching CSV data:', error);
+      });
   }, []);
 
   const filteredGames = gameList.filter(game =>
-    game.name?.toLowerCase()?.includes(textFilter.toLowerCase())
+    game.name?.toLowerCase()?.includes(textFilter.toLowerCase()),
   );
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ flexGrow: 4 }}>
+      <ScrollView style={{flexGrow: 4}}>
         {filteredGames.map((game, index) => (
           <MenuItem
             selectItemFunction={setSelectedGame}
@@ -50,9 +68,10 @@ export default function App() {
         {selectedGame ? (
           <>
             <Text style={styles.selectedGameName}>{selectedGame.name}</Text>
-            <Toggle
-              style={styles.toggle}
-              defaultOnValueChange={handleToggleChange}
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={handleToggleChange}
               value={selectedGame.collected}
             />
           </>
@@ -84,7 +103,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   toggle: {
-    transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+    transform: [{scaleX: 1.5}, {scaleY: 1.5}],
   },
   footer: {
     position: 'absolute',

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Image } from 'react-native';
-import magIcon from '../../mg icon.png';
+import React, {useState} from 'react';
+import {View, TextInput, TouchableOpacity, Image} from 'react-native';
+import magIcon from '../mg icon.png';
 
 export default function SearchTool(props) {
   const [searchBarExpanded, setSearchBarExpanded] = useState(false);
@@ -13,7 +13,7 @@ export default function SearchTool(props) {
   };
 
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+    <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
       {searchBarExpanded ? (
         <TextInput
           style={{
@@ -32,10 +32,9 @@ export default function SearchTool(props) {
         />
       ) : null}
       <TouchableOpacity
-        style={{ justifyContent: 'flex-end' }}
-        onPress={handleToggleSearchBar}
-      >
-        <Image source={magIcon} style={{ width: 20, height: 20 }} />
+        style={{justifyContent: 'flex-end'}}
+        onPress={handleToggleSearchBar}>
+        <Image source={magIcon} style={{width: 20, height: 20}} />
       </TouchableOpacity>
     </View>
   );
