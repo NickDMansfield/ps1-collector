@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, ScrollView, Switch} from 'react-native';
-import MenuItem from './components/MenuItem';
+import MenuItem, {MemoIzedMenuItem} from './components/MenuItem';
 import SearchTool from './components/SearchTool';
 
 export default function App() {
@@ -57,7 +57,7 @@ export default function App() {
     <View style={styles.container}>
       <ScrollView style={{flexGrow: 4}}>
         {filteredGames.map((game, index) => (
-          <MenuItem
+          <MemoIzedMenuItem
             selectItemFunction={setSelectedGame}
             key={index}
             game={game}
