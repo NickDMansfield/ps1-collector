@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity,ScrollView, Switch, Pressable, Modal} from 'react-native';
 import MenuItem, {MemoIzedMenuItem} from './components/MenuItem';
 import SearchTool from './components/SearchTool';
@@ -25,35 +25,36 @@ export default function App() {
       }));
     }
   };
+  
+  const memoizedGameMenuItemClicked = useMemo(() => {
+    return (game) => {
+      setSelectedGame(game);
 
-  const gameMenuItemClicked = (game) => {
-    setSelectedGame(game);
-
-    const encodedString = encodeURI(game.name);
-    const getGamePriceRegex = new RegExp('\\.com\\/game\\/playstation\\/[\\s\\S.]*?title="\\d*?">\\s*(.*?)<\\/a>[\\s\\S.]*?td\\sclass="console[\\s\\S.]*?span>\\s*?Playstation[\\s\\S.]*?cib_price[\\s\\S.]*?js-price">(.*?)<','gmi');
-    fetch(`https://www.pricecharting.com/search-products?type=prices&q=${encodedString}&go=Go`)
-    .then(response2 => response2.text())
-    .then(htmlResp => {
-      var match;
-      const gameVersionPrices = [];
-      while ((match = getGamePriceRegex.exec(JSON.parse(JSON.stringify(htmlResp))))) {
-        const matchVal = JSON.parse(JSON.stringify(match));
-        const versionInfo = {};
-        if (matchVal[1]) {
-          console.log('name:' + matchVal[1]);
-          versionInfo.name = matchVal[1];
-        }
-        if (matchVal[2]) {
-          console.log('price:' + matchVal[2]);
-          versionInfo.price = matchVal[2];
-        }
-        gameVersionPrices.push(versionInfo);
-      }
-      console.log(gameVersionPrices);
-      setSelectedGamePrices(gameVersionPrices);
-          
-    });
-  }
+      const encodedString = encodeURI(game.name);
+      const getGamePriceRegex = new RegExp('\\.com\\/game\\/playstation\\/[\\s\\S.]*?title="\\d*?">\\s*(.*?)<\\/a>[\\s\\S.]*?td\\sclass="console[\\s\\S.]*?span>\\s*?Playstation[\\s\\S.]*?cib_price[\\s\\S.]*?js-price">(.*?)<','gmi');
+      fetch(`https://www.pricecharting.com/search-products?type=prices&q=${encodedString}&go=Go`)
+        .then((response2) => response2.text())
+        .then((htmlResp) => {
+          var match;
+          const gameVersionPrices = [];
+          while ((match = getGamePriceRegex.exec(JSON.parse(JSON.stringify(htmlResp))))) {
+            const matchVal = JSON.parse(JSON.stringify(match));
+            const versionInfo = {};
+            if (matchVal[1]) {
+              console.log('name:' + matchVal[1]);
+              versionInfo.name = matchVal[1];
+            }
+            if (matchVal[2]) {
+              console.log('price:' + matchVal[2]);
+              versionInfo.price = matchVal[2];
+            }
+            gameVersionPrices.push(versionInfo);
+          }
+          console.log(gameVersionPrices);
+          setSelectedGamePrices(gameVersionPrices);
+        });
+    };
+  }, []);
 
   useEffect(() => {
     // Fetch the CSV data from the local file
@@ -110,7 +111,7 @@ export default function App() {
       <ScrollView style={{flexGrow: 4}}>
         {filteredGames.map((game, index) => (
           <MemoIzedMenuItem
-            selectItemFunction={gameMenuItemClicked}
+            selectItemFunction={memoizedGameMenuItemClicked}
             key={index}
             game={game}
           />
