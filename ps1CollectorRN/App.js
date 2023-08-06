@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity,ScrollView, Switch, Pressable, Modal} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity,ScrollView, Switch, Pressable, Modal, useColorScheme} from 'react-native';
 import MenuItem, {MemoIzedMenuItem} from './components/MenuItem';
 import SearchTool from './components/SearchTool';
 
@@ -9,6 +9,8 @@ export default function App() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [textFilter, setTextFilter] = useState('');
   const [priceModalOpen, setPriceModalOpen] = useState(false);
+  const theme = useColorScheme();
+  const isDarkTheme = theme === 'dark';
 
   const handleToggleChange = () => {
     if (selectedGame) {
@@ -42,16 +44,16 @@ export default function App() {
               const matchVal = JSON.parse(JSON.stringify(match));
               const versionInfo = {};
               if (matchVal[1]) {
-                console.log('name:' + matchVal[1]);
+              //  console.log('name:' + matchVal[1]);
                 versionInfo.name = matchVal[1];
               }
               if (matchVal[2]) {
-                console.log('price:' + matchVal[2]);
+            //    console.log('price:' + matchVal[2]);
                 versionInfo.price = matchVal[2];
               }
               gameVersionPrices.push(versionInfo);
             }
-            console.log(gameVersionPrices);
+          //  console.log(gameVersionPrices);
             setSelectedGamePrices(gameVersionPrices);
           });
       };
@@ -92,15 +94,15 @@ export default function App() {
         transparent={true}
         visible={priceModalOpen}
         onRequestClose={() => {
+          console.log(selectedGamePrices);
           setPriceModalOpen(!priceModalOpen);
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
              {selectedGamePrices.map((game, index) => (
-              <View 
-              key={index}>
-                <Text>{game.name}</Text>
-                <Text>{game.price}</Text>
+              <View key={index}>
+                <Text style={{color: !isDarkTheme ? '#ffffff' : '#000000'}}>{game.name}</Text>
+                <Text style={{color: !isDarkTheme ? '#ffffff' : '#000000'}}>{game.price}</Text>
               </View>
                ))}
           </View>
@@ -124,12 +126,6 @@ export default function App() {
         {selectedGame ? (
           <>
             <Text style={styles.selectedGameName}>{selectedGame.name}</Text>
-            <Switch
-              trackColor={{false: '#767577', true: '#81b0ff'}}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={handleToggleChange}
-              value={selectedGame.collected}
-            />
           </>
         ) : null}
       </View>
@@ -142,11 +138,17 @@ export default function App() {
               <Text>{selectedGamePrices[0].price}+</Text>
             </TouchableOpacity>
           ) :  <Text>{selectedGamePrices[0].price}</Text> : ''}
+          
+          {gameList.length ?
+           (<Text style={styles.footerText}>
+            Showing {filteredGames.length} of {gameList.length}
+          </Text>) 
+          : ''}
+          
         </View>
-        <Text style={styles.footerText}>
-          Showing {filteredGames.length} of {gameList.length}
-        </Text>
-        <SearchTool textChangedSetter={setTextFilter} />
+        <View>
+          <SearchTool textChangedSetter={setTextFilter} />
+        </View>
       </View>
     </View>
   );
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 15,
   },
   centeredView: {
     flex: 1,

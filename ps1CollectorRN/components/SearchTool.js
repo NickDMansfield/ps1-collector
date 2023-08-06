@@ -22,6 +22,7 @@ export default function SearchTool(props) {
             borderWidth: 1,
             marginRight: 10,
             paddingHorizontal: 10,
+            minWidth:100
           }}
           value={searchText}
           placeholder="useless placeholder"
