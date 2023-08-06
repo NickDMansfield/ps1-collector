@@ -28,32 +28,34 @@ export default function App() {
   
   const memoizedGameMenuItemClicked = useMemo(() => {
     return (game) => {
-      setSelectedGame(game);
-
-      const encodedString = encodeURI(game.name);
-      const getGamePriceRegex = new RegExp('\\.com\\/game\\/playstation\\/[\\s\\S.]*?title="\\d*?">\\s*(.*?)<\\/a>[\\s\\S.]*?td\\sclass="console[\\s\\S.]*?span>\\s*?Playstation[\\s\\S.]*?cib_price[\\s\\S.]*?js-price">(.*?)<','gmi');
-      fetch(`https://www.pricecharting.com/search-products?type=prices&q=${encodedString}&go=Go`)
-        .then((response2) => response2.text())
-        .then((htmlResp) => {
-          var match;
-          const gameVersionPrices = [];
-          while ((match = getGamePriceRegex.exec(JSON.parse(JSON.stringify(htmlResp))))) {
-            const matchVal = JSON.parse(JSON.stringify(match));
-            const versionInfo = {};
-            if (matchVal[1]) {
-              console.log('name:' + matchVal[1]);
-              versionInfo.name = matchVal[1];
+      if (!selectedGame || selectedGame.name !== game.name) {
+        setSelectedGame(game);
+  
+        const encodedString = encodeURI(game.name);
+        const getGamePriceRegex = new RegExp('\\.com\\/game\\/playstation\\/[\\s\\S.]*?title="\\d*?">\\s*(.*?)<\\/a>[\\s\\S.]*?td\\sclass="console[\\s\\S.]*?span>\\s*?Playstation[\\s\\S.]*?cib_price[\\s\\S.]*?js-price">(.*?)<','gmi');
+        fetch(`https://www.pricecharting.com/search-products?type=prices&q=${encodedString}&go=Go`)
+          .then((response2) => response2.text())
+          .then((htmlResp) => {
+            var match;
+            const gameVersionPrices = [];
+            while ((match = getGamePriceRegex.exec(JSON.parse(JSON.stringify(htmlResp))))) {
+              const matchVal = JSON.parse(JSON.stringify(match));
+              const versionInfo = {};
+              if (matchVal[1]) {
+                console.log('name:' + matchVal[1]);
+                versionInfo.name = matchVal[1];
+              }
+              if (matchVal[2]) {
+                console.log('price:' + matchVal[2]);
+                versionInfo.price = matchVal[2];
+              }
+              gameVersionPrices.push(versionInfo);
             }
-            if (matchVal[2]) {
-              console.log('price:' + matchVal[2]);
-              versionInfo.price = matchVal[2];
-            }
-            gameVersionPrices.push(versionInfo);
-          }
-          console.log(gameVersionPrices);
-          setSelectedGamePrices(gameVersionPrices);
-        });
-    };
+            console.log(gameVersionPrices);
+            setSelectedGamePrices(gameVersionPrices);
+          });
+      };
+      }
   }, []);
 
   useEffect(() => {
@@ -95,7 +97,8 @@ export default function App() {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
              {selectedGamePrices.map((game, index) => (
-              <View>
+              <View 
+              key={index}>
                 <Text>{game.name}</Text>
                 <Text>{game.price}</Text>
               </View>
@@ -132,14 +135,13 @@ export default function App() {
       </View>
       <View style={styles.footer}>
         <View>
-          <Text>{selectedGamePrices.length ? selectedGamePrices[0].price : ''}</Text>
-          {selectedGamePrices.length > 1 ? (
-            
+         {selectedGamePrices.length ? selectedGamePrices.length > 1 ? (
+           
             <TouchableOpacity
             onPress={() => setPriceModalOpen(true)}>
-              <Text>+</Text>
+              <Text>{selectedGamePrices[0].price}+</Text>
             </TouchableOpacity>
-          ) : ''}
+          ) :  <Text>{selectedGamePrices[0].price}</Text> : ''}
         </View>
         <Text style={styles.footerText}>
           Showing {filteredGames.length} of {gameList.length}
@@ -159,6 +161,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom:'10%'
   },
   selectedGameName: {
     fontWeight: 'bold',
