@@ -2,6 +2,7 @@ import React, {useState, useEffect, useMemo} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity,ScrollView, Switch, Pressable, Modal, useColorScheme} from 'react-native';
 import MenuItem, {MemoIzedMenuItem} from './components/MenuItem';
 import SearchTool from './components/SearchTool';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   const [gameList, setGameList] = useState([]);
@@ -27,6 +28,26 @@ export default function App() {
       }));
     }
   };
+
+  // Save CSV data to AsyncStorage
+const saveDataLocally = async (csvData) => {
+  try {
+    await AsyncStorage.setItem('cachedPS1CSVData', csvData);
+  } catch (error) {
+    console.error('Error saving data locally:', error);
+  }
+};
+
+// Load CSV data from AsyncStorage
+const loadCachedData = async () => {
+  try {
+    const cachedData = await AsyncStorage.getItem('cachedPS1CSVData');
+    return cachedData;
+  } catch (error) {
+    console.error('Error loading cached data:', error);
+    return null;
+  }
+};
   
   const memoizedGameMenuItemClicked = useMemo(() => {
     return (game) => {
@@ -65,6 +86,11 @@ export default function App() {
     fetch('https://raw.githubusercontent.com/NickDMansfield/ps1-collector/master/formattedCSV.csv')
       .then(response => response.text())
       .then(csvData => {
+        if (!csvData) {
+          csvData = loadCachedData();
+        } else {
+          saveDataLocally(csvData);
+        }
         // Split the CSV data into rows
         const csvRows = csvData.split('\n').slice(1); // Split by new line to get rows
         const parsedGameList = csvRows
