@@ -95,10 +95,12 @@ const loadCachedData = async () => {
         const csvRows = csvData.split('\n').slice(1); // Split by new line to get rows
         const parsedGameList = csvRows
           .map(csvRow => {
-            const [name, collected] = csvRow.split(','); // Split by comma to get name and collected status
+            const [name, collected, releaseDate, releaseMSRP, dateCollected, collectedPrice,notes] = csvRow.split(','); // Split by comma to get name and collected status
             return {
               name,
               collected: collected && collected.toLowerCase() === 'true',
+              collectedPrice,
+              dateCollected
             }; // Convert collected to a boolean
           })
           .filter(gg => gg.name);

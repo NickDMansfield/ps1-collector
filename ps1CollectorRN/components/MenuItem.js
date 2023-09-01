@@ -27,6 +27,7 @@ export default function MenuItem(props) {
           paddingLeft: 10,
         }}>
         <Text>{props.game.name || ''}</Text>
+        <Text>{props.game.collectedPrice ? 'Paid $' + props.game.collectedPrice+ ' ' + props.game.dateCollected : ''}</Text>
       </View>
     </TouchableOpacity>
   );
