@@ -112,7 +112,10 @@ const loadCachedData = async () => {
   }, []);
 
   const filteredGames = gameList.filter(game =>
-    game.name?.toLowerCase()?.includes(textFilter.toLowerCase()),
+    game.name?.toLowerCase()?.includes(textFilter.toLowerCase())
+  );
+  const collectedGames = gameList.filter(game =>
+    game.collected
   );
 
   return (
@@ -168,9 +171,15 @@ const loadCachedData = async () => {
           ) :  <Text>{selectedGamePrices[0].price}</Text> : ''}
           
           {gameList.length ?
-           (<Text style={styles.footerText}>
-            Showing {filteredGames.length} of {gameList.length}
-          </Text>) 
+           (
+           <View>
+              <Text style={styles.footerText}>
+                Showing {filteredGames.length} of {gameList.length}
+              </Text>
+              <Text style={styles.footerText}>
+                Collected {collectedGames.length} of {gameList.length}
+              </Text>
+            </View>) 
           : ''}
           
         </View>

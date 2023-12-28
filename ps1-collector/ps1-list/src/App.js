@@ -44,6 +44,7 @@ function App() {
   }, []); // The empty dependency array ensures the effect runs only once on component mount
 
   const filteredGames = gameList.filter(game => game.name?.toLowerCase()?.indexOf(textFilter) >= 0);
+  const collectedGames = gameList.filter(game => game.collected?.toLowerCase() === 'true');
   return (
     
     <div className="App">
@@ -68,6 +69,9 @@ function App() {
         </div>
         <div style={{position: 'absolute', bottom: '6vh', right: '2vw' }}>
           Showing {filteredGames.length} of {gameList.length}
+          </div>
+        <div style={{position: 'absolute', bottom: '6vh', right: '2vw' }}>
+          Collected {collectedGames.length} of {gameList.length}
           </div>
         <div style={{position: 'absolute', bottom: 0, right: 0, marginRight: '2vw', marginBottom: '2vh'}}>
           <SearchTool textChangedSetter={setTextFilter} />
